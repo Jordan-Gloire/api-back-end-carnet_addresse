@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Carnet;
+use App\Notifications\InvoicePaid;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+
 
 class CarnetController extends Controller implements HasMiddleware
 {
@@ -18,9 +22,11 @@ class CarnetController extends Controller implements HasMiddleware
      */
     public function index()
     {
+        $address = Carnet::paginate(5);
+        // Retourner une réponse JSON avec les données paginées
         return response()->json([
-            'succes' => true,
-            'addresse' => Carnet::all()
+            'success' => true,
+            'addresses' => $address
         ]);
     }
 
@@ -30,7 +36,7 @@ class CarnetController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validateData = $request->validate([
-            'nom' => 'required|min:5|max:15',
+            'name' => 'required|min:5|max:15',
             'numero' => 'required|min:9|max:9',
             'address' => 'required',
             'birthdate' => 'required',
@@ -38,6 +44,15 @@ class CarnetController extends Controller implements HasMiddleware
         ]);
 
         $address = $request->user()->carnets()->create($validateData);
+        // dd($address);
+        // Envoi de la notification à l'utilisateur connecté
+        // $user = Auth::user();
+        // if ($user) {
+        //     Notification::send($user, new InvoicePaid($address));
+        // } else {
+        //     // Gérer le cas où l'utilisateur n'est pas authentifié
+        //     return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        // }
 
         return response()->json([
             'success' => true,

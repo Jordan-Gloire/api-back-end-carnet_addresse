@@ -13,3 +13,4 @@ Route::apiResource('carnet', App\Http\Controllers\CarnetController::class);
 Route::post('/inscription', [AuthController::class, 'inscription']);
 Route::post('/connexion', [AuthController::class, 'connexion']);
 Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->middleware('auth:sanctum');
+Route::post('/recherche', [AuthController::class, 'recherche']);
